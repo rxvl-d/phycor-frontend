@@ -21,11 +21,11 @@ class PageBrowser extends React.Component {
         <Pagination.Prev onClick={() => this.props.onPrev()} />
         <Pagination.Item active>{this.props.page}</Pagination.Item>
         <Pagination.Next onClick={() => this.props.onNext()}/>
-        <Pagination.Last onClick={() => this.props.onNum(this.props.page_count)}/>
+        <Pagination.Last onClick={() => this.props.onNum(this.props.max_page_num)}/>
       </Pagination>
       </Row>
       <Row>
-      <img src={'http://localhost:5000/fast_parse/book/' +
+      <img src={'http://localhost:5000/' + this.props.model + '/book/' +
                   encodeURIComponent(this.props.book) +
                   '/page/' + this.props.page + '.jpg'}/>
       </Row>
@@ -33,6 +33,7 @@ class PageBrowser extends React.Component {
       </div>
     );
   }
+
 }
 
 export default PageBrowser;

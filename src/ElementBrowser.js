@@ -26,9 +26,12 @@ class ElementBrowser extends React.Component {
       </Pagination>
       </Row>
       <Row>
-      <img src={'http://localhost:5000/fast_parse/book/' +
-      encodeURIComponent(this.props.book) +
-      '/page/' + this.props.page + '/element/' + this.props.element + '.jpg'}/>
+        <img src={'http://localhost:5000/' + this.props.model + '/book/' +
+                  encodeURIComponent(this.props.book) +
+                  '/page/' + this.props.page + '/element/' + this.props.element + '.jpg'}/>
+      </Row>
+      <Row>
+      <p>{this.props.text}</p>
       </Row>
       </Container>
       </div>

@@ -15,8 +15,9 @@ class Browser extends React.Component {
     super(props);
     this.state = {
       books: null,
+      model: 'fast',
       current_book: null,
-      current_book_page_count: null,
+      current_book_max_page_num: null,
       current_page_element_count: null,
       current_page: null,
       current_element: null
@@ -24,7 +25,7 @@ class Browser extends React.Component {
   }
 
   componentDidMount() {
-    fetch('http://localhost:5000/fast_parse/books.json', {mode: 'cors'})
+    fetch('http://localhost:5000/' + this.state.model + '/books.json', {mode: 'cors'})
       .then(res => res.json())
       .then(
         (result) => this.setState({books: result.books}),
@@ -33,14 +34,10 @@ class Browser extends React.Component {
   }
 
   createSelectModels() {
-    if (this.state.books) {
-      return [
-        <option key={"fast"}>detectron2/PubLayNet/faster_rcnn_R_50_FPN_3x</option>,
-        <option key={"efficient"}>efficientdet/PubLayNet/tf_efficientdet_d1</option>
-      ]
-    } else {
-      return <option>loading books</option>
-    }
+    return [
+      <option key={"fast"} value={"fast"}>detectron2/PubLayNet/faster_rcnn_R_50_FPN_3x</option>,
+      <option key={"efficient"} value={"efficient"}>efficientdet/PubLayNet/tf_efficientdet_d1</option>
+    ]
   }
 
   createSelectBooks() {
@@ -54,13 +51,18 @@ class Browser extends React.Component {
     }
   }
 
- onDropdownSelected(e) {
+ onBookDropdownSelected(e) {
    this.setState({
      current_book: e.target.value,
-     current_book_page_count: this.state.books.filter((b) => b.name == e.target.value)[0].page_count,
+     current_book_max_page_num: this.state.books.filter((b) => b.name == e.target.value)[0].page_count,
      current_page: 0,
      current_element: 0})
  }
+
+onModelDropdownSelected(e) {
+  this.setState({
+    model: e.target.value})
+}
 
   render() {
     console.log('rendering browser with ' + this.state.current_book)
@@ -74,7 +76,7 @@ class Browser extends React.Component {
             </Form.Select>
           </Col>
           <Col>
-            <Form.Select onChange={(e) => this.onDropdownSelected(e)} label="Select Book">
+            <Form.Select onChange={(e) => this.onBookDropdownSelected(e)} label="Select Book">
                  {this.createSelectBooks()}
             </Form.Select>
           </Col>
@@ -82,8 +84,9 @@ class Browser extends React.Component {
         <Row>
           <Col>
             <PageBrowser
+            model={this.state.model}
             book={this.state.current_book}
-            page_count={this.state.current_book_page_count}
+            max_page_num={this.state.current_book_max_page_num}
             page={this.state.current_page}
             onNext={() => this.handleNextPage()}
             onPrev={() => this.handlePrevPage()}
@@ -92,10 +95,12 @@ class Browser extends React.Component {
 
           <Col>
               <ElementBrowser
+              model={this.state.model}
               book={this.state.current_book}
               element_count={this.state.current_page_element_count}
               page={this.state.current_page}
               element={this.state.current_element}
+              text={this.state.current_element_text}
               onNext={() => this.handleNextElement()}
               onPrev={() => this.handlePrevElement()}
               onNum={(i) => this.handleGoToElement(i)}/>
@@ -119,18 +124,13 @@ class Browser extends React.Component {
     this.setState({
       current_page: page_num,
       current_element: 0});
-    fetch('http://localhost:5000/fast_parse/book/' +
+    fetch('http://localhost:5000/' + this.state.model + '/book/' +
                 encodeURIComponent(this.state.current_book) +
                 '/page/' + page_num + '.json',
                 {mode: 'cors'}
           ).then(res => res.json())
           .then(
-            (result) => {
-              console.log('handling async')
-              console.log(result)
-              this.setState({
-              current_page_element_count: result.element_count
-            })},
+            (result) => this.setState({current_page_element_count: result.element_count}),
             (error) => console.log(error));
   }
 
@@ -144,6 +144,16 @@ class Browser extends React.Component {
 
   handleGoToElement(element_num) {
     this.setState({current_element: element_num})
+    fetch('http://localhost:5000/' + this.state.model + '/book/' +
+                encodeURIComponent(this.state.current_book) +
+                '/page/' + this.state.current_page  +
+                '/element_ocr/' + element_num + '.txt',
+                {mode: 'cors'}
+              ).then(res => res.text())
+              .then(
+                (result) => this.setState({current_element_text: result}),
+                (error) => console.log(error));
+
   }
 };
 
