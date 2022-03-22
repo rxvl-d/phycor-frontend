@@ -31,7 +31,12 @@ class ElementBrowser extends React.Component {
                   '/page/' + this.props.page + '/element/' + this.props.element + '.jpg'}/>
       </Row>
       <Row>
-      <p>{this.props.text}</p>
+      <h2>Tesseract Text:</h2>
+      <p>{this.props.tesseract_text}</p>
+      </Row>
+      <Row>
+      <h2>Doc Text:</h2>
+      <p>{this.props.doc_text}</p>
       </Row>
       </Container>
       </div>

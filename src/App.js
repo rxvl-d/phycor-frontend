@@ -19,6 +19,8 @@ class Browser extends React.Component {
       current_book: null,
       current_book_max_page_num: null,
       current_page_element_count: null,
+      current_element_text_tesseract: null,
+      current_element_text_doc: null,
       current_page: null,
       current_element: null
     };
@@ -100,7 +102,8 @@ onModelDropdownSelected(e) {
               element_count={this.state.current_page_element_count}
               page={this.state.current_page}
               element={this.state.current_element}
-              text={this.state.current_element_text}
+              tesseract_text={this.state.current_element_text_tesseract}
+              doc_text={this.state.current_element_text_doc}
               onNext={() => this.handleNextElement()}
               onPrev={() => this.handlePrevElement()}
               onNum={(i) => this.handleGoToElement(i)}/>
@@ -149,9 +152,11 @@ onModelDropdownSelected(e) {
                 '/page/' + this.state.current_page  +
                 '/element_ocr/' + element_num + '.txt',
                 {mode: 'cors'}
-              ).then(res => res.text())
+              ).then(res => res.json())
               .then(
-                (result) => this.setState({current_element_text: result}),
+                (result) => this.setState({
+                  current_element_text_tesseract: result.tesseract,
+                  current_element_text_doc: result.doc}),
                 (error) => console.log(error));
 
   }
