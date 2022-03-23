@@ -73,7 +73,7 @@ onModelDropdownSelected(e) {
       <Container>
         <Row>
           <Col>
-            <Form.Select label="Select Model">
+            <Form.Select onChange={(e) => this.onModelDropdownSelected(e)} label="Select Model">
                  {this.createSelectModels()}
             </Form.Select>
           </Col>
